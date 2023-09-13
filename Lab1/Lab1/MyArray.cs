@@ -7,19 +7,30 @@ using System.Threading.Tasks;
 
 namespace Lab1
 {
-    public class MyArray<T> : ICollection<T>
+    public class MyArray<T> : IList<T>
     {
-        private int _count;
+        private int _defaultCapacity = 4;
+
+        private int _count = 0;
         private int _capacity;
         private T[] _items;
 
         public int Count => _count;
 
-        public bool IsReadOnly => throw new NotImplementedException();
+        public bool IsReadOnly => false;
+
+        public T this[int index] { get => _items[GetProperIndex(index)]; set => _items[GetProperIndex(index)] = value; }
 
         public MyArray()
         {
-            _items = new T[0];
+            _capacity = _defaultCapacity;
+            _items = new T[_capacity];
+        }
+
+        public MyArray(int capacity)
+        {
+            _capacity = _defaultCapacity = capacity;
+            _items = new T[_capacity];
         }
 
         public void Add(T item)
@@ -56,5 +67,33 @@ namespace Lab1
         {
             throw new NotImplementedException();
         }
+
+        public int IndexOf(T item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Insert(int index, T item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveAt(int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region PRIVATE METHODS
+        private int GetProperIndex(int index) => index % _count;
+
+        private void Resize()
+        {
+            _capacity *= 2;
+
+            int[] tempArray = new int[_capacity];
+
+            Array.Copy(_items, tempArray, _count);
+        }
+        #endregion
     }
 }
