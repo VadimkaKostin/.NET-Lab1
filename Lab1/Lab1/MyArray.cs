@@ -7,20 +7,17 @@ using System.Threading.Tasks;
 
 namespace Lab1
 {
-    public class MyArray<T> : IList<T>
+    public class MyArray<T> : IList<T> where T : class
     {
+        #region PRIVATE FIELDS
         private int _defaultCapacity = 4;
 
         private int _count = 0;
         private int _capacity;
         private T[] _items;
+        #endregion
 
-        public int Count => _count;
-
-        public bool IsReadOnly => false;
-
-        public T this[int index] { get => _items[GetProperIndex(index)]; set => _items[GetProperIndex(index)] = value; }
-
+        #region CONSTRUCTORS
         public MyArray()
         {
             _capacity = _defaultCapacity;
@@ -32,25 +29,47 @@ namespace Lab1
             _capacity = _defaultCapacity = capacity;
             _items = new T[_capacity];
         }
+        #endregion
+
+        #region INTERFACE REALIZATION
+        public int Count => _count;
+
+        public bool IsReadOnly => false;
+
+        public T this[int index] { get => _items[GetProperIndex(index)]; set => _items[GetProperIndex(index)] = value; }
 
         public void Add(T item)
         {
-            throw new NotImplementedException();
+            if (_count == _capacity)
+            {
+                Resize();
+            }
+
+            _items[_count++] = item;
         }
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            _count = 0;
+            _capacity = _defaultCapacity;
+
+            _items = new T[_capacity];
         }
 
         public bool Contains(T item)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < _count; i++)
+            {
+                if (_items[i].Equals(item))
+                    return true;
+            }
+
+            return false;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            Array.ConstrainedCopy(_items, 0, array, arrayIndex, _count);
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -60,7 +79,15 @@ namespace Lab1
 
         public bool Remove(T item)
         {
-            throw new NotImplementedException();
+            int index = IndexOf(item);
+
+            if (index >= 0)
+            {
+                RemoveAt(index);
+                return true;
+            }
+
+            return false;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -82,17 +109,21 @@ namespace Lab1
         {
             throw new NotImplementedException();
         }
+        #endregion
 
         #region PRIVATE METHODS
-        private int GetProperIndex(int index) => index % _count;
+        private int GetProperIndex(int index)
+            => index >= 0 ? index % _count : _count + index % _count;
 
         private void Resize()
         {
             _capacity *= 2;
 
-            int[] tempArray = new int[_capacity];
+            T[] tempArray = new T[_capacity];
 
             Array.Copy(_items, tempArray, _count);
+
+            _items = tempArray;
         }
         #endregion
     }
