@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Lab1
+namespace CustomCollections
 {
     public class MyArray<T> : IList<T> 
         where T : class, new()
