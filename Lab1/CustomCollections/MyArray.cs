@@ -22,6 +22,9 @@ namespace CustomCollections
 
         public MyArray(int capacity)
         {
+            if (capacity <= 0)
+                throw new ArgumentOutOfRangeException("Capacity must be a positive value.");
+
             _capacity = _defaultCapacity = capacity;
             _items = new T[_capacity];
         }
@@ -70,7 +73,7 @@ namespace CustomCollections
 
         public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return new CustomEnumerator<T>(this);
         }
 
         public bool Remove(T item)
@@ -88,7 +91,7 @@ namespace CustomCollections
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return GetEnumerator();
         }
 
         public int IndexOf(T item)
