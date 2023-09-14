@@ -15,12 +15,12 @@ namespace CustomCollections
         public CustomEnumerator(IList<T> collection)
         {
             _collection = collection;
-            _index = 0;
+            _index = -1;
 
             _current = _collection.Any() ? _collection[0] : default!;
         }
 
-        private bool HasNext() => _index < _collection.Count - 1;
+        private bool HasNext() => _index < _collection.Count;
 
         public bool MoveNext()
         {
@@ -33,7 +33,7 @@ namespace CustomCollections
 
         public void Reset()
         {
-            _index = 0;
+            _index = -1;
 
             if (_collection.Any())
             {

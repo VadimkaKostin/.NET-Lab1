@@ -2,8 +2,8 @@
 
 namespace CustomCollections
 {
-    public class MyArray<T> : IList<T> 
-        where T : class, new()
+    public class CustomArray<T> : IList<T> 
+        where T : new()
     {
         #region PRIVATE FIELDS
         private int _defaultCapacity = 4;
@@ -14,19 +14,28 @@ namespace CustomCollections
         #endregion
 
         #region CONSTRUCTORS
-        public MyArray()
+        public CustomArray()
         {
             _capacity = _defaultCapacity;
             _items = new T[_capacity];
         }
 
-        public MyArray(int capacity)
+        public CustomArray(int capacity)
         {
-            if (capacity <= 0)
-                throw new ArgumentOutOfRangeException("Capacity must be a positive value.");
-
-            _capacity = _defaultCapacity = capacity;
-            _items = new T[_capacity];
+            if (capacity < 0)
+            {
+                throw new ArgumentOutOfRangeException("Capacity cannot be negative.");
+            }
+            else if (capacity > 0)
+            {
+                _capacity = _defaultCapacity = capacity;
+                _items = new T[_capacity];
+            }
+            else
+            {
+                _capacity = capacity;
+                _items = Array.Empty<T>();
+            }
         }
         #endregion
 
@@ -68,6 +77,11 @@ namespace CustomCollections
 
         public void CopyTo(T[] array, int arrayIndex)
         {
+            if (array.Length - arrayIndex < _count)
+            {
+                throw new ArgumentOutOfRangeException("Number of elements to copy cannot be placed into the destination array.");
+            }
+
             Array.ConstrainedCopy(_items, 0, array, arrayIndex, _count);
         }
 
@@ -129,11 +143,16 @@ namespace CustomCollections
 
         #region PRIVATE METHODS
         private int GetProperIndex(int index)
-            => index >= 0 ? index % _count : _count + index % _count;
+        {
+            if (_count is 0)
+                throw new ArgumentOutOfRangeException("Cannot read or set element by index of empty array.");
+
+            return index >= 0 ? index % _count : _count + index % _count;
+        }
 
         private void Resize()
         {
-            _capacity *= 2;
+            _capacity = _capacity is 0 ? _defaultCapacity : _capacity * 2;
 
             T[] tempArray = new T[_capacity];
 
