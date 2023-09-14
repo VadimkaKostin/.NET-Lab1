@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections;
 
 namespace Lab1
 {
-    public class MyArray<T> : IList<T> where T : class
+    public class MyArray<T> : IList<T> 
+        where T : class, new()
     {
         #region PRIVATE FIELDS
         private int _defaultCapacity = 4;
@@ -97,17 +93,34 @@ namespace Lab1
 
         public int IndexOf(T item)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < _count; i++)
+            {
+                if (_items[i].Equals(item))
+                    return i;
+            }
+
+            return -1;
         }
 
         public void Insert(int index, T item)
         {
-            throw new NotImplementedException();
+            if (_count == _capacity)
+            {
+                Resize();
+            }
+
+            MovePartOfArray(GetProperIndex(index));
+
+            _items[GetProperIndex(index)] = item;
+
+            _count++;
         }
 
         public void RemoveAt(int index)
         {
-            throw new NotImplementedException();
+            MovePartOfArray(GetProperIndex(index) + 1, moveBack: true);
+
+            _count--;
         }
         #endregion
 
@@ -124,6 +137,16 @@ namespace Lab1
             Array.Copy(_items, tempArray, _count);
 
             _items = tempArray;
+        }
+
+        private void MovePartOfArray(int index, bool moveBack = false)
+        {
+            if(index == 0 || index >= _count)
+            {
+                return;
+            }
+
+            Array.Copy(_items, index, _items, moveBack ? index - 1 : index + 1, _count - index);
         }
         #endregion
     }
