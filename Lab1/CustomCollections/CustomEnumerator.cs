@@ -20,7 +20,7 @@ namespace CustomCollections
             _current = _collection.Any() ? _collection[0] : default!;
         }
 
-        private bool HasNext() => _index < _collection.Count;
+        private bool HasNext() => _index + 1 < _collection.Count;
 
         public bool MoveNext()
         {
@@ -28,7 +28,7 @@ namespace CustomCollections
                 return false;
 
             _current = _collection[++_index];
-            return HasNext();
+            return true;
         }
 
         public void Reset()
