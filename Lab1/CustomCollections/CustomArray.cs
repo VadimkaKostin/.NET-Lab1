@@ -6,7 +6,7 @@ namespace CustomCollections
         where T : new()
     {
         #region PRIVATE FIELDS
-        private int _defaultCapacity = 4;
+        private readonly int _defaultCapacity = 4;
 
         private int _count = 0;
         private int _capacity;
@@ -18,6 +18,22 @@ namespace CustomCollections
         {
             _capacity = _defaultCapacity;
             _items = new T[_capacity];
+        }
+
+        public CustomArray(IEnumerable<T> items)
+        {
+            if (items is null)
+            {
+                throw new ArgumentNullException("Items cannot be null.");
+            }
+
+            _capacity = _defaultCapacity;
+            _items = new T[_capacity];
+
+            foreach (var item in items)
+            {
+                this.Add(item);
+            }
         }
 
         public CustomArray(int capacity)

@@ -20,15 +20,18 @@ namespace CustomCollections
             _current = _collection.Any() ? _collection[0] : default!;
         }
 
-        private bool HasNext() => _index + 1 < _collection.Count;
-
         public bool MoveNext()
         {
-            if (!HasNext()) 
-                return false;
+            _index++;
 
-            _current = _collection[++_index];
-            return true;
+            if (_index < _collection.Count)
+            {
+                _current = _collection[_index];
+
+                return true;
+            }
+            
+            return false;
         }
 
         public void Reset()
