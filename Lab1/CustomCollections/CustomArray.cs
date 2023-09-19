@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CustomCollections.CustomEventArgs;
+using System.Collections;
 
 namespace CustomCollections
 {
@@ -55,6 +56,48 @@ namespace CustomCollections
         }
         #endregion
 
+        #region EVENTS
+        public EventHandler<ArrayItemEventArgs<T>> ItemAdded;
+
+        public EventHandler<ArrayItemEventArgs<T>> ItemRemoved;
+
+        public EventHandler<ArrayEventArgs> ArrayCleared;
+
+        public EventHandler<ArrayResizedEventArgs> ArrayResized;
+
+        protected virtual void OnItemAdded(T item, int index)
+        {
+            if (ItemAdded != null)
+            {
+                ItemAdded(this, new ArrayItemEventArgs<T>(item, index, ArrayAction.Add));
+            }
+        }
+
+        protected virtual void OnItemRemoved(T item, int index)
+        {
+            if (ItemRemoved != null)
+            {
+                ItemRemoved(this, new ArrayItemEventArgs<T>(item, index, ArrayAction.Remove));
+            }
+        }
+
+        protected virtual void OnArrayCleared()
+        {
+            if (ArrayCleared != null)
+            {
+                ArrayCleared(this, new ArrayEventArgs(ArrayAction.Clear));
+            }
+        }
+
+        protected virtual void OnArrayResized(int oldCapacity)
+        {
+            if (ArrayResized != null)
+            {
+                ArrayResized(this, new ArrayResizedEventArgs(oldCapacity, _capacity));
+            }
+        }
+        #endregion
+
         #region INTERFACE REALIZATION
         public int Count => _count;
 
@@ -70,6 +113,8 @@ namespace CustomCollections
             }
 
             _items[_count++] = item;
+
+            OnItemAdded(item, _count - 1);
         }
 
         public void Clear()
@@ -78,6 +123,8 @@ namespace CustomCollections
             _capacity = _defaultCapacity;
 
             _items = new T[_capacity];
+
+            OnArrayCleared();
         }
 
         public bool Contains(T item)
@@ -113,6 +160,7 @@ namespace CustomCollections
             if (index >= 0)
             {
                 RemoveAt(index);
+
                 return true;
             }
 
@@ -147,13 +195,19 @@ namespace CustomCollections
             _items[GetProperIndex(index)] = item;
 
             _count++;
+
+            OnItemAdded(item, index);
         }
 
         public void RemoveAt(int index)
         {
+            var item = this[index];
+
             MovePartOfArray(GetProperIndex(index) + 1, moveBack: true);
 
             _count--;
+
+            OnItemRemoved(item, index);
         }
         #endregion
 
@@ -168,13 +222,17 @@ namespace CustomCollections
 
         private void Resize()
         {
-            _capacity = _capacity is 0 ? _defaultCapacity : _capacity * 2;
+            int oldCapacity = _capacity;
+
+            _capacity = oldCapacity is 0 ? _defaultCapacity : oldCapacity * 2;
 
             T[] tempArray = new T[_capacity];
 
             Array.Copy(_items, tempArray, _count);
 
             _items = tempArray;
+
+            OnArrayResized(oldCapacity);
         }
 
         private void MovePartOfArray(int index, bool moveBack = false)
