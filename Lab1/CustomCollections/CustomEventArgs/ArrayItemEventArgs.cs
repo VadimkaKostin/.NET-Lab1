@@ -8,8 +8,8 @@ namespace CustomCollections.CustomEventArgs
 {
     public class ArrayItemEventArgs<T> : ArrayEventArgs
     {
-        public T Item { get; }
-        public int Index { get; }
+        public T Item { get; private set; }
+        public int Index { get; private set; }
 
         public ArrayItemEventArgs(T item, int index, ArrayAction action) : base(action)
         {

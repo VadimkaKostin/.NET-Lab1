@@ -4,7 +4,7 @@ using System.Collections;
 namespace CustomCollections
 {
     public class CustomArray<T> : IList<T> 
-        where T : new()
+        where T : IComparable<T>, new()
     {
         #region PRIVATE FIELDS
         private readonly int _defaultCapacity = 4;
@@ -41,7 +41,7 @@ namespace CustomCollections
         {
             if (capacity < 0)
             {
-                throw new ArgumentOutOfRangeException("Capacity cannot be negative.");
+                throw new ArgumentException("Capacity cannot be negative.");
             }
             else if (capacity > 0)
             {
@@ -107,6 +107,11 @@ namespace CustomCollections
 
         public void Add(T item)
         {
+            if(item is null)
+            {
+                throw new ArgumentNullException("Item to add cannot be null.");
+            }
+
             if (_count == _capacity)
             {
                 Resize();
@@ -129,9 +134,14 @@ namespace CustomCollections
 
         public bool Contains(T item)
         {
+            if (item is null)
+            {
+                throw new ArgumentNullException("Item to check for existance cannot be null.");
+            }
+
             for (int i = 0; i < _count; i++)
             {
-                if (_items[i].Equals(item))
+                if (_items[i].CompareTo(item) == 0)
                     return true;
             }
 
@@ -140,6 +150,11 @@ namespace CustomCollections
 
         public void CopyTo(T[] array, int arrayIndex)
         {
+            if (array is null)
+            {
+                throw new ArgumentNullException("Array cannot be null.");
+            }
+
             if (array.Length - arrayIndex < _count)
             {
                 throw new ArgumentOutOfRangeException("Number of elements to copy cannot be placed into the destination array.");
@@ -155,6 +170,11 @@ namespace CustomCollections
 
         public bool Remove(T item)
         {
+            if (item is null)
+            {
+                throw new ArgumentNullException("Item to remove cannot be null.");
+            }
+
             int index = IndexOf(item);
 
             if (index >= 0)
@@ -174,10 +194,18 @@ namespace CustomCollections
 
         public int IndexOf(T item)
         {
-            for (int i = 0; i < _count; i++)
+            if (item is null)
             {
-                if (_items[i].Equals(item))
-                    return i;
+                throw new ArgumentNullException("Item to search cannot be null.");
+            }
+
+            if (_count > 0)
+            {
+                for (int i = 0; i < _count; i++)
+                {
+                    if (_items[i].CompareTo(item) == 0)
+                        return i;
+                }
             }
 
             return -1;
@@ -185,39 +213,52 @@ namespace CustomCollections
 
         public void Insert(int index, T item)
         {
+            if (item is null)
+            {
+                throw new ArgumentNullException("Item to insert cannot be null.");
+            }
+
             if (_count == _capacity)
             {
                 Resize();
             }
 
-            MovePartOfArray(GetProperIndex(index));
+            int properIndex = GetProperIndex(index, toInsert: true);
 
-            _items[GetProperIndex(index)] = item;
+            MovePartOfArray(properIndex);
+
+            _items[properIndex] = item;
 
             _count++;
 
-            OnItemAdded(item, index);
+            OnItemAdded(item, properIndex);
         }
 
         public void RemoveAt(int index)
         {
-            var item = this[index];
+            int properIndex = GetProperIndex(index);
 
-            MovePartOfArray(GetProperIndex(index) + 1, moveBack: true);
+            var item = this[properIndex];
+
+            MovePartOfArray(properIndex + 1, moveBack: true);
 
             _count--;
 
-            OnItemRemoved(item, index);
+            OnItemRemoved(item, properIndex);
         }
         #endregion
 
         #region PRIVATE METHODS
-        private int GetProperIndex(int index)
+        private int GetProperIndex(int index, bool toInsert = false)
         {
-            if (_count is 0)
-                throw new ArgumentOutOfRangeException("Cannot read or set element by index of empty array.");
+            if (_count == 0 && !toInsert)
+            {
+                throw new ArgumentOutOfRangeException("Cannot get or set element by index: array is empty.");
+            }
 
-            return index >= 0 ? index % _count : _count + index % _count;
+            int count = toInsert ? _count + 1 : _count;
+
+            return index >= 0 ? index % count : (count + (index % count)) % count;
         }
 
         private void Resize()
@@ -237,7 +278,7 @@ namespace CustomCollections
 
         private void MovePartOfArray(int index, bool moveBack = false)
         {
-            if(index == 0 || index >= _count)
+            if((index == 0 && moveBack) || index >= _count)
             {
                 return;
             }

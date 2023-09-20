@@ -8,8 +8,8 @@ namespace CustomCollections.CustomEventArgs
 {
     public class ArrayEventArgs : EventArgs
     {
-        public ArrayAction Action { get; }
-        public DateTime ActionDateTime { get; }
+        public ArrayAction Action { get; private set; }
+        public DateTime ActionDateTime { get; private set; }
         
         public ArrayEventArgs(ArrayAction action)
         {
