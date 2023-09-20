@@ -1,5 +1,6 @@
 ﻿using System;
 using CustomCollections;
+using CustomCollections.CustomEventArgs;
 
 namespace Lab1;
 
@@ -13,18 +14,46 @@ public static class Program
         }
     }
 
-    public static void Main(string[] args)
+    public static void Main()
     {
-        CustomArray<int> array = new CustomArray<int>(16) { 1, 2, 3, 4, 5 };
+        //Initializing array and subscribing on it`s events
+        CustomArray<int> array = new CustomArray<int>();
 
-        array.Insert(2, 6);
+        array.ItemAdded += PrintArrayItemEventArgs!;
+        array.ItemRemoved += PrintArrayItemEventArgs!;
+        array.ArrayCleared += (sender, e) => Console.WriteLine($"--> Event invoked: {e.Action} {e.ActionDateTime}");
+        array.ArrayResized += (sender, e) =>
+        Console.WriteLine($"--> Event invoked: {e.Action} {e.ActionDateTime} Old capacity: {e.OldCapacity} New capacity: {e.NewCapacity}");
 
-        array.Foreach(x => Console.Write(x + " "));
+        //Adding new items to array
+        array.Insert(0, 2);
+        array.Insert(1, 3);
+        array.Insert(2, 5);
+        array.Insert(2, 4);
+        array.Insert(0, 1);
 
-        Console.WriteLine();
+        Console.WriteLine("\nArray after adding elements:");
+        array.Foreach(item => Console.Write(item + " "));
 
-        array.RemoveAt(-1);
+        //Removing items from array
+        Console.WriteLine("\n");
 
-        array.Foreach(x => Console.Write(x + " "));
+        array.Remove(3);
+
+        array.RemoveAt(2);
+
+        Console.WriteLine("\nArray after removing several elements:");
+        array.Foreach(item => Console.Write(item + " "));
+
+        //Clearing array
+        Console.WriteLine("\n");
+
+        array.Clear();
+        Console.WriteLine($"Count: {array.Count}");
+    }
+
+    public static void PrintArrayItemEventArgs(object sender, ArrayItemEventArgs<int> e)
+    {
+        Console.WriteLine($"--> Event invoked: {e.Action} {e.ActionDateTime} Item: {e.Item} Index: {e.Index}");
     }
 }
