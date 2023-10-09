@@ -3,7 +3,6 @@ using CustomCollections;
 using CustomCollections.CustomEventArgs;
 
 namespace Lab1;
-
 public static class Program
 {
     public static void Foreach<T>(this IEnumerable<T> enumerable, Action<T> action)
