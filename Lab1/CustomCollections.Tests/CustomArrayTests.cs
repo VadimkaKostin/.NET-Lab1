@@ -318,5 +318,109 @@ namespace CustomCollections.Tests
             Assert.Equal(elementToInsert2, collection[realIndex2]);
         }
         #endregion
+
+        #region RemoveAt
+        [Fact]
+        public void RemoveAt_EmptyCollection_ThrowsArgumentOutOfRangeException()
+        {
+            // Arrange
+            var collection = new CustomArray<int>();
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                // Act
+                collection.RemoveAt(0);
+            });
+        }
+
+        [Fact]
+        public void RemoveAt_IndexPassed_SuccessfullRemoving()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 3 };
+            var indexToRemove = 1;
+            var elementToRemove = collection[indexToRemove];
+            var defaultCount = collection.Count;
+
+            // Act
+            collection.RemoveAt(indexToRemove);
+
+            // Assert
+            Assert.Equal(1, defaultCount - collection.Count);
+            Assert.DoesNotContain(elementToRemove, collection);
+        }
+
+        [Fact]
+        public void RemoveAt_IndexOutOfRange_SuccessfullRemoving()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 3 };
+
+            var indexToRemove1 = 4;
+            var elementToRemove1 = collection[indexToRemove1];
+
+            var indexToRemove2 = -1;
+            var elementToRemove2 = collection[indexToRemove2];
+
+            int defaultCount = collection.Count;
+
+            // Act
+            collection.RemoveAt(indexToRemove1);
+            collection.RemoveAt(indexToRemove2);
+
+            // Assert
+            Assert.Equal(2, defaultCount - collection.Count);
+            Assert.DoesNotContain(elementToRemove1, collection);
+            Assert.DoesNotContain(elementToRemove2, collection);
+        }
+        #endregion
+
+        #region Remove
+        [Fact]
+        public void Remove_NullElement_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var collection = new CustomArray<TestItem>();
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                // Act
+                var result = collection.Remove(null);
+            });
+        }
+
+        [Fact]
+        public void Remove_ElementDoesNotExist_ReturnsFalse()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 3 };
+            var elementToRemove = 4;
+
+            // Act
+            var result = collection.Remove(elementToRemove);
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void Remove_ElementExists_SuccessfullRemoving()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 3 };
+            var elementToRemove = 3;
+            int defaultCount = collection.Count;
+
+            // Act
+            var result = collection.Remove(elementToRemove);
+
+            // Assert
+            Assert.True(result);
+            Assert.Equal(1, defaultCount - collection.Count);
+            Assert.DoesNotContain(elementToRemove, collection);
+        }
+        #endregion
     }
 }
