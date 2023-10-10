@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -108,6 +109,103 @@ namespace CustomCollections.Tests
                 // Act
                 collection.Add(null);
             });
+        }
+        #endregion
+
+        #region Clear
+        [Fact]
+        public void Clear_EmptyCollection()
+        {
+            // Arrange
+            var collection = new CustomArray<int>(GetDefaultSetForCollection());
+
+            // Act
+            collection.Clear();
+
+            // Assert
+            Assert.Empty(collection);
+        }
+        #endregion
+
+        #region Contains
+        [Fact]
+        public void Contains_ElementPassed_ReturnsResultOfExistence()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 3 };
+
+            // Act
+            bool result1 = collection.Contains(2);
+            bool result2 = collection.Contains(4);
+
+            //Assert
+            Assert.True(result1);
+            Assert.False(result2);
+        }
+
+        [Fact]
+        public void Clear_NullElement_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var collection = new CustomArray<TestItem>();
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                // Act
+                collection.Contains(null);
+            });
+        }
+        #endregion
+
+        #region CopyTo
+        [Fact]
+        public void CopyTo_NullArray_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var collection = new CustomArray<int>();
+            int[] arrayCopyTo = null;
+            int indexCopyTo = 0;
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                // Act
+                collection.CopyTo(arrayCopyTo, indexCopyTo);
+            });
+        }
+
+        [Fact]
+        public void CopyTo_ArrayDoesNotFitIntoTheRange_ThrowsArgumentOutOfRangeException()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 4, 5, 6 };
+            var arrayCopyTo = new int[] { 1, 2, 3 };
+            int indexCopyTo = 2;
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                // Act
+                collection.CopyTo(arrayCopyTo, indexCopyTo);
+            });
+        }
+
+        [Fact]
+        public void CopyTo_CorrectArrayAndIndex_SuccessfullCopying()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 4, 5, 6 };
+            var arrayCopyTo = new int[6] { 1, 2, 3, 0, 0, 0 };
+            var indexCopyTo = 3;
+
+            // Act
+            collection.CopyTo(arrayCopyTo, indexCopyTo);
+
+            // Assert
+            Assert.Equal(collection[0], arrayCopyTo[3]);
+            Assert.Equal(collection[1], arrayCopyTo[4]);
+            Assert.Equal(collection[2], arrayCopyTo[5]);
         }
         #endregion
     }
