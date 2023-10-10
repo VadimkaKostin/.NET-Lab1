@@ -208,5 +208,115 @@ namespace CustomCollections.Tests
             Assert.Equal(collection[2], arrayCopyTo[5]);
         }
         #endregion
+
+        #region IndexOf
+        [Fact]
+        public void IndexOf_NullElement_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var collection = new CustomArray<TestItem>();
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                // Act
+                int index = collection.IndexOf(null);
+            });
+        }
+
+        [Fact]
+        public void IndexOf_ElementDoesNotExist_ReturnsDefaultIndex()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 3 };
+            int element = 4;
+            int defaultIndex = -1;
+
+            // Act
+            int actualIndex = collection.IndexOf(element);
+
+            // Assert
+            Assert.Equal(defaultIndex, actualIndex);
+        }
+
+        [Fact]
+        public void IndexOf_ElementExists_ReturnsElementsIndex()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 3 };
+            int element = 2;
+            int expectedIndex = 1;
+
+            // Act 
+            int actualIndex = collection.IndexOf(element);
+
+            // Assert
+            Assert.Equal(expectedIndex, actualIndex);
+        }
+        #endregion
+
+        #region Insert
+        [Fact]
+        public void Insert_NullElement_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var collection = new CustomArray<TestItem>();
+
+            // Assert
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                // Act
+                collection.Insert(0, null);
+            });
+        }
+
+        [Fact]
+        public void Insert_ProperElement_SuccessfullInsertion()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 4, 5 };
+            int elementToInsert = 3;
+            int indexToInsert = 2;
+
+            int defaultCount = collection.Count;
+
+            // Act
+            collection.Insert(indexToInsert, elementToInsert);
+
+            // Assert
+            Assert.Equal(elementToInsert, collection[indexToInsert]);
+            Assert.Equal(1, collection.Count - defaultCount);
+        }
+
+        [Fact]
+        public void Insert_IndexOutOfRange_SuccessfullInsertion()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 4 };
+
+            int expectedCount = collection.Count;
+
+            int elementToInsert1 = 3;
+            int indexToInsert1 = 6;
+            int realIndex1 = indexToInsert1 % (expectedCount + 1);
+
+            expectedCount++;
+
+            int elementToInsert2 = 5;
+            int indexToInsert2 = -1;
+            int realIndex2 = (expectedCount + 1 + indexToInsert2 % (expectedCount + 1)) % (expectedCount + 1);
+
+            expectedCount++;
+
+            // Act
+            collection.Insert(indexToInsert1, elementToInsert1);
+            collection.Insert(indexToInsert2, elementToInsert2);
+
+            // Assert
+            Assert.Equal(expectedCount, collection.Count);
+            Assert.Equal(elementToInsert1, collection[realIndex1]);
+            Assert.Equal(elementToInsert2, collection[realIndex2]);
+        }
+        #endregion
     }
 }
