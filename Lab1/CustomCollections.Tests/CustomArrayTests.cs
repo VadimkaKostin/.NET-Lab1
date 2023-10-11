@@ -9,6 +9,72 @@ namespace CustomCollections.Tests
 {
     public class CustomArrayTests : CollectionTestsBase
     {
+        #region Constructor
+        [Fact]
+        public void Constructor_NoParametres_EmptyCollectionCreated()
+        {
+            // Act
+            var collection = new Collection();
+            
+            // Assert
+            Assert.Empty(collection);
+        }
+
+        [Fact]
+        public void Constructor_NegativeCapacity_ThrowsArgumentException()
+        {
+            // Arrange
+            int capacity = -5;
+            
+            // Assert
+            Assert.Throws<ArgumentException>(() =>
+            {
+                // Act
+                var collection = new CustomArray<int>(capacity);
+            });
+        }
+
+        [Fact]
+        public void Constructor_NotNegative_SuccessfullyCreation()
+        {
+            // Arrange
+            int capacity = 5;
+            
+            // Act
+            var collection = new CustomArray<int>(capacity);
+            
+            // Assert
+            Assert.Empty(collection);
+        }
+
+        [Fact]
+        public void Custructor_NullArray_ThrowsArgumentNullException()
+        {
+            // Arrange
+            IEnumerable<int> arr = null;
+            
+            // Assert
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                // Act
+                var collection = new CustomArray<int>(arr);
+            });
+        }   
+        
+        [Theory]
+        [InlineData(new int[] { 1, 2, 3, 4, 5 })]
+        [InlineData(new int[] { -1, 0, 1 })]
+        [InlineData(new int[] { 7, 6, 9, 11, 24 })]
+        public void Constructor_CollectionPassed_SuccessfullCreation(IEnumerable<int> arr)
+        {
+            // Act
+            var collection = new CustomArray<int>(arr);
+            
+            // Assert
+            Assert.Equal(arr, collection);
+        }
+        #endregion
+
         #region Index
         [Fact]
         public void Index_CallToEmptyCollection_ThrowsArgumentOutOfRangeException()
@@ -42,6 +108,25 @@ namespace CustomCollections.Tests
             Assert.Equal(testElements[2], third);
         }
 
+        [Theory]
+        [InlineData(new int[] { 1, 2, 3 }, 2, 4)]
+        [InlineData(new int[] { -1, 0, 1 }, 1, 2)]
+        [InlineData(new int[] { 10, 20, 30, 40, 50 }, 4, 60)]
+        public void Index_SetValueByIndex_ElementChanges(int[] arr, int index, int newValue)
+        {
+            // Arrange
+            var collection = new CustomArray<int>(arr);
+            var oldValue = collection[index];
+            
+            // Act
+            collection[index] = newValue;
+            
+            // Assert
+            Assert.Contains(newValue, collection);
+            Assert.DoesNotContain(oldValue, collection);
+            Assert.Equal(index, collection.IndexOf(newValue));
+        }
+
         [Fact]
         public void Index_IndexOutOfRange_ReturnsProperElement()
         {
@@ -66,9 +151,11 @@ namespace CustomCollections.Tests
             Assert.Equal(expectedElementPositive, actualElementPositive);
             Assert.Equal(expectedElementNegative, actualElementNegative);
         }
+
         #endregion
 
         #region Add
+
         [Fact]
         public void Add_NewElement_AddedToTheEnd()
         {
@@ -110,9 +197,11 @@ namespace CustomCollections.Tests
                 collection.Add(null);
             });
         }
+
         #endregion
 
         #region Clear
+
         [Fact]
         public void Clear_EmptyCollection()
         {
@@ -125,9 +214,11 @@ namespace CustomCollections.Tests
             // Assert
             Assert.Empty(collection);
         }
+
         #endregion
 
         #region Contains
+
         [Fact]
         public void Contains_ElementPassed_ReturnsResultOfExistence()
         {
@@ -156,9 +247,11 @@ namespace CustomCollections.Tests
                 collection.Contains(null);
             });
         }
+
         #endregion
 
         #region CopyTo
+
         [Fact]
         public void CopyTo_NullArray_ThrowsArgumentNullException()
         {
@@ -207,9 +300,11 @@ namespace CustomCollections.Tests
             Assert.Equal(collection[1], arrayCopyTo[4]);
             Assert.Equal(collection[2], arrayCopyTo[5]);
         }
+
         #endregion
 
         #region IndexOf
+
         [Fact]
         public void IndexOf_NullElement_ThrowsArgumentNullException()
         {
@@ -253,9 +348,11 @@ namespace CustomCollections.Tests
             // Assert
             Assert.Equal(expectedIndex, actualIndex);
         }
+
         #endregion
 
         #region Insert
+
         [Fact]
         public void Insert_NullElement_ThrowsArgumentNullException()
         {
@@ -317,9 +414,11 @@ namespace CustomCollections.Tests
             Assert.Equal(elementToInsert1, collection[realIndex1]);
             Assert.Equal(elementToInsert2, collection[realIndex2]);
         }
+
         #endregion
 
         #region RemoveAt
+
         [Fact]
         public void RemoveAt_EmptyCollection_ThrowsArgumentOutOfRangeException()
         {
@@ -374,9 +473,11 @@ namespace CustomCollections.Tests
             Assert.DoesNotContain(elementToRemove1, collection);
             Assert.DoesNotContain(elementToRemove2, collection);
         }
+
         #endregion
 
         #region Remove
+
         [Fact]
         public void Remove_NullElement_ThrowsArgumentNullException()
         {
@@ -421,6 +522,7 @@ namespace CustomCollections.Tests
             Assert.Equal(1, defaultCount - collection.Count);
             Assert.DoesNotContain(elementToRemove, collection);
         }
+
         #endregion
     }
 }

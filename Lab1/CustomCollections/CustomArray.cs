@@ -28,7 +28,8 @@ namespace CustomCollections
                 throw new ArgumentNullException("Items cannot be null.");
             }
 
-            _capacity = _defaultCapacity = items.Count();
+            _capacity = items.Count();
+            if (_capacity > 0) _defaultCapacity = _capacity;
             _items = new T[_capacity];
 
             foreach (var item in items)
