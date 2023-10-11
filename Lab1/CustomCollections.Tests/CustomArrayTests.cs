@@ -559,5 +559,69 @@ namespace CustomCollections.Tests
         }
 
         #endregion
+        
+        #region Events
+        [Fact]
+        public void ItemAdded_EventRaised()
+        {
+            // Arrange
+            var collection = new CustomArray<int>();
+            var countEventRaised = 0;
+            collection.ItemAdded += (sender, e) => countEventRaised++;
+            
+            // Act
+            collection.Add(2);
+            collection.Insert(0, 1);
+            
+            // Assert
+            Assert.Equal(2, countEventRaised);
+        }
+        
+        [Fact]
+        public void ItemRemoved_EventRaised()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 3 };
+            var countEventRaised = 0;
+            collection.ItemRemoved += (sender, e) => countEventRaised++;
+            
+            // Act
+            collection.Remove(2);
+            collection.RemoveAt(0);
+            
+            // Assert
+            Assert.Equal(2, countEventRaised);
+        }
+        
+        [Fact]
+        public void ArrayCleared_EventRaised()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 3 };
+            var eventRaised = false;
+            collection.ArrayCleared += (sender, e) => eventRaised = true;
+            
+            // Act
+            collection.Clear();
+            
+            // Assert
+            Assert.True(eventRaised);
+        }
+        
+        [Fact]
+        public void ArrayResized_EventRaised()
+        {
+            // Arrange
+            var collection = new CustomArray<int>(4) { 1, 2, 3, 4 };
+            var eventRaised = false;
+            collection.ArrayResized += (sender, e) => eventRaised = true;
+            
+            // Act
+            collection.Add(5);
+            
+            // Assert
+            Assert.True(eventRaised);
+        }
+        #endregion
     }
 }
