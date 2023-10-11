@@ -34,12 +34,11 @@ namespace CustomCollections.Tests
             });
         }
 
-        [Fact]
-        public void Constructor_NotNegative_SuccessfullyCreation()
+        [Theory]
+        [InlineData(5)]
+        [InlineData(0)]
+        public void Constructor_NotNegative_SuccessfullyCreation(int capacity)
         {
-            // Arrange
-            int capacity = 5;
-            
             // Act
             var collection = new CustomArray<int>(capacity);
             
@@ -152,6 +151,42 @@ namespace CustomCollections.Tests
             Assert.Equal(expectedElementNegative, actualElementNegative);
         }
 
+        #endregion
+        
+        #region Enumerator
+        [Fact]
+        public void Enumerator_LastElement_MoveNextReturnsFalse()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2 };
+            var enumerator = collection.GetEnumerator();
+            enumerator.MoveNext();
+            enumerator.MoveNext();
+
+            // Act
+            var result = enumerator.MoveNext();
+            
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void Enumerator_Reset_CurrentMovesToTheFirstElement()
+        {
+            // Arrange
+            var collection = new CustomArray<int>() { 1, 2, 3, 4, 5 };
+            var enumerator = collection.GetEnumerator();
+
+            enumerator.MoveNext();
+            var expectedItem = enumerator.Current;
+            enumerator.MoveNext();
+            
+            // Act
+            enumerator.Reset();
+            
+            // Assert
+            Assert.Equal(expectedItem, enumerator.Current);
+        }
         #endregion
 
         #region Add
